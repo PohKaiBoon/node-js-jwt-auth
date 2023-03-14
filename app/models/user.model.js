@@ -36,6 +36,9 @@ module.exports = (sequelize, Sequelize) => {
     preferredGender: {
       type: Sequelize.BOOLEAN,
     },
+    subjectPreferences: {
+      type: Sequelize.STRING,
+    },
   });
 
   return User;
