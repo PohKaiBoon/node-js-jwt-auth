@@ -13,17 +13,25 @@ exports.signup = (req, res) => {
   User.create({
     username: req.body.username,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
+    name: req.body.name,
+    address: req.body.address,
+    highestQualification: req.body.highestQualification,
+    birthday: req.body.birthday,
+    hourly: req.body.hourly,
+    // modeTeaching: req.body.modeTeaching,
+    // gender: req.body.gender,
+    subjectPreferences: req.body.subjectPreferences,
+    password: bcrypt.hashSync(req.body.password, 8),
   })
-    .then(user => {
+    .then((user) => {
       if (req.body.roles) {
         Role.findAll({
           where: {
             name: {
-              [Op.or]: req.body.roles
-            }
-          }
-        }).then(roles => {
+              [Op.or]: req.body.roles,
+            },
+          },
+        }).then((roles) => {
           user.setRoles(roles).then(() => {
             res.send({ message: "User registered successfully!" });
           });
@@ -35,7 +43,7 @@ exports.signup = (req, res) => {
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ message: err.message });
     });
 };
@@ -43,10 +51,10 @@ exports.signup = (req, res) => {
 exports.signin = (req, res) => {
   User.findOne({
     where: {
-      username: req.body.username
-    }
+      username: req.body.username,
+    },
   })
-    .then(user => {
+    .then((user) => {
       if (!user) {
         return res.status(404).send({ message: "User Not found." });
       }
@@ -59,16 +67,16 @@ exports.signin = (req, res) => {
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
-          message: "Invalid Password!"
+          message: "Invalid Password!",
         });
       }
 
       var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400 // 24 hours
+        expiresIn: 86400, // 24 hours
       });
 
       var authorities = [];
-      user.getRoles().then(roles => {
+      user.getRoles().then((roles) => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push("ROLE_" + roles[i].name.toUpperCase());
         }
@@ -76,12 +84,20 @@ exports.signin = (req, res) => {
           id: user.id,
           username: user.username,
           email: user.email,
+          name: user.name,
+          highestQualification: user.highestQualification,
+          address: user.address,
+          birthday: user.birthday,
+          hourly: user.hourly,
+          // modeTeaching: user.modeTeaching,
+          // gender: user.gender,
+          subjectPreferences: user.subjectPreferences,
           roles: authorities,
-          accessToken: token
+          accessToken: token,
         });
       });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({ message: err.message });
     });
 };
