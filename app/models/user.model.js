@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.DATEONLY,
     },
     gender: {
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.STRING,
     },
     highestQualification: {
       type: Sequelize.STRING,
@@ -31,10 +31,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
     },
     modeTeaching: {
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.STRING,
     },
     preferredGender: {
-      type: Sequelize.BOOLEAN,
+      type: Sequelize.STRING,
     },
     subjectPreferences: {
       type: Sequelize.STRING,
