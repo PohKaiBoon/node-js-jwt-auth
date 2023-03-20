@@ -12,7 +12,6 @@ exports.signup = (req, res) => {
   // Save User to Database
   User.create({
     username: req.body.username,
-    email: req.body.email,
     name: req.body.name,
     address: req.body.address,
     highestQualification: req.body.highestQualification,
@@ -58,7 +57,7 @@ exports.signin = (req, res) => {
   })
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(401).send({ message: "Wrong username or password." });
       }
 
       var passwordIsValid = bcrypt.compareSync(
@@ -69,7 +68,7 @@ exports.signin = (req, res) => {
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
-          message: "Invalid Password!",
+          message: "Wrong username or password.",
         });
       }
 
@@ -85,7 +84,6 @@ exports.signin = (req, res) => {
         res.status(200).send({
           id: user.id,
           username: user.username,
-          email: user.email,
           name: user.name,
           highestQualification: user.highestQualification,
           address: user.address,
