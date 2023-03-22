@@ -116,7 +116,7 @@ exports.signin = (req, res) => {
 async function filtering(user) {
   var matchedTeacher = [];
   const teachers = await sequelize.query(
-    "SELECT * FROM findcher.users JOIN user_roles ON users.id=user_roles.userId WHERE roleId=2",
+    "SELECT id,name,contactNumber, gender, highestQualification, hourly, modeTeaching, subjectPreferences FROM findcher.users JOIN user_roles ON users.id=user_roles.userId WHERE roleId=2",
     {
       type: QueryTypes.SELECT,
     }
