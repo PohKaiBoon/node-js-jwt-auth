@@ -19,4 +19,9 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isTeacher],
     controller.teacherBoard
   );
+
+  app.put(
+    "/api/editprofile/:id",
+    controller.editProfile
+  );
 };
