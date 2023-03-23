@@ -28,29 +28,37 @@ exports.userBoard = async (req, res) => {
     });
   }
 };
+
 exports.editProfile = (req, res) => {
   const {
     id,
+    username,
     name,
-    contactNumber,
-    address,
     highestQualification,
-    modeTeaching,
-    preferredGender,
-    subjectPreferences,
+    address,
+    birthday,
     hourly,
+    modeTeaching,
+    gender,
+    preferredGender,
+    contactNumber,
+    subjectPreferences,
+    roles,
+    accessToken,
+    matchedTeachers
   } = req.body;
 
   User.update(
     {
+      id,
       name,
-      contactNumber,
-      address,
       highestQualification,
+      address,
+      hourly,
       modeTeaching,
       preferredGender,
+      contactNumber,
       subjectPreferences,
-      hourly,
     },
     {
       where: {
