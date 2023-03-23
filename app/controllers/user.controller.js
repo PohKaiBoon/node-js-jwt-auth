@@ -36,6 +36,7 @@ exports.editProfile = (req, res) => {
     address,
     highestQualification,
     modeTeaching,
+    preferredGender,
     subjectPreferences,
     hourly,
   } = req.body;
@@ -47,6 +48,7 @@ exports.editProfile = (req, res) => {
       address,
       highestQualification,
       modeTeaching,
+      preferredGender,
       subjectPreferences,
       hourly,
     },
