@@ -2,11 +2,13 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const User = db.user;
 const Role = db.role;
+const { QueryTypes } = require("sequelize");
 
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const { Sequelize, user, sequelize } = require("../models");
 
 exports.signup = (req, res) => {
   if (req.body.roles && req.body.roles.indexOf("teacher") !== -1) {
@@ -43,6 +45,8 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  let matchedTeachers = [];
+
   User.findOne({
     where: {
       username: req.body.username,
@@ -70,9 +74,13 @@ exports.signin = (req, res) => {
       });
 
       var authorities = [];
-      user.getRoles().then((roles) => {
+      user.getRoles().then(async (roles) => {
         for (let i = 0; i < roles.length; i++) {
           authorities.push("ROLE_" + roles[i].name.toUpperCase());
+        }
+        if (authorities[0] === "ROLE_STUDENT") {
+          matchedTeachers = await filtering(user);
+          console.log(matchedTeachers);
         }
         res.status(200).send({
           id: user.id,
@@ -89,6 +97,7 @@ exports.signin = (req, res) => {
           subjectPreferences: user.subjectPreferences,
           roles: authorities,
           accessToken: token,
+          matchedTeachers: matchedTeachers,
         });
       });
     })
@@ -96,3 +105,54 @@ exports.signin = (req, res) => {
       res.status(500).send({ message: err.message });
     });
 };
+
+async function filtering(user) {
+  var matchedTeacher = [];
+  const teachers = await sequelize.query(
+    "SELECT id,name,contactNumber, gender, highestQualification, hourly, modeTeaching, subjectPreferences FROM findcher.users JOIN user_roles ON users.id=user_roles.userId WHERE roleId=2",
+    {
+      type: QueryTypes.SELECT,
+    }
+  );
+
+  console.log(teachers.length);
+
+  if (teachers.length == 0) {
+    return "No teachers available at the moment!";
+  }
+
+  let currentStudent = JSON.parse(JSON.stringify(user));
+
+  for (let index = 0; index < teachers.length; index++) {
+    console.log("Teacher Start" + index.toString());
+
+    var match = 0;
+
+    if (currentStudent.preferredGender === teachers[index].gender) {
+      console.log("gender is a match");
+      match++;
+    }
+    if (currentStudent.hourly <= teachers[index].hourly) {
+      console.log("hourly is a match");
+      match++;
+    }
+    var subjectArrayTeachers = teachers[index].subjectPreferences.split(", ");
+    var subjectArrayStudent = currentStudent.subjectPreferences.split(", ");
+
+    subjectArrayStudent.forEach((element) => {
+      if (subjectArrayTeachers.includes(element)) {
+        match++;
+        console.log(element + "Matched!");
+      }
+    });
+
+    console.log(match);
+    if (match >= 2) {
+      matchedTeacher.push(teachers[index]);
+    }
+
+    console.log("Teacher End" + index.toString());
+  }
+
+  return matchedTeacher;
+}
