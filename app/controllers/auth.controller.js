@@ -11,37 +11,43 @@ var bcrypt = require("bcryptjs");
 const { Sequelize, user, sequelize } = require("../models");
 
 exports.signup = (req, res) => {
-  if (req.body.roles && req.body.roles.indexOf("teacher") !== -1) {
-    // Save User to Database
-    User.create({
-      username: req.body.username,
-      name: req.body.name,
-      address: req.body.address,
-      highestQualification: req.body.highestQualification,
-      birthday: req.body.birthday,
-      hourly: req.body.hourly,
-      contactNumber: req.body.contactNumber,
-      modeTeaching: req.body.modeTeaching,
-      gender: req.body.gender,
-      preferredGender: req.body.preferredGender,
-      subjectPreferences: req.body.subjectPreferences,
-      password: bcrypt.hashSync(req.body.password, 8),
-    })
-      .then((user) => {
-        // Set user roles as "teacher"
-        Role.findOne({ where: { name: "teacher" } }).then((role) => {
-          user.setRoles([role]).then(() => {
-            res.send({ message: "Teacher registered successfully!" });
+  User.create({
+    username: req.body.username,
+    name: req.body.name,
+    address: req.body.address,
+    highestQualification: req.body.highestQualification,
+    birthday: req.body.birthday,
+    hourly: req.body.hourly,
+    contactNumber: req.body.contactNumber,
+    modeTeaching: req.body.modeTeaching,
+    gender: req.body.gender,
+    preferredGender: req.body.preferredGender,
+    subjectPreferences: req.body.subjectPreferences,
+    password: bcrypt.hashSync(req.body.password, 8),
+  })
+    .then((user) => {
+      if (req.body.roles) {
+        Role.findAll({
+          where: {
+            name: {
+              [Op.or]: req.body.roles,
+            },
+          },
+        }).then((roles) => {
+          user.setRoles(roles).then(() => {
+            res.send({ message: "User registered successfully!" });
           });
         });
-      })
-      .catch((err) => {
-        res.status(500).send({ message: err.message });
-      });
-  } else {
-    // Ignore non-teacher users
-    res.send({ message: "Student registered successfully!" });
-  }
+      } else {
+        // user role = 1
+        user.setRoles([1]).then(() => {
+          res.send({ message: "User registered successfully!" });
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message });
+    });
 };
 
 exports.signin = (req, res) => {
