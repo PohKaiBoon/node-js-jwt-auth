@@ -18,7 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 // database
 const db = require("./app/models");
 const Role = db.role;
-const User = db.user;
 
 // db.sequelize.sync({ force: true }).then(() => {
 //   console.log("Drop and Resync Database with { force: true }");
@@ -29,12 +28,6 @@ const User = db.user;
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
-
-// app.get("/api/users", (req, res) => {
-//   User.findAll().then((users) => {
-//     res.json(users);
-//   });
-// });
 
 // routes
 require("./app/routes/auth.routes")(app);
