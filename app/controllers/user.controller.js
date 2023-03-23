@@ -18,11 +18,23 @@ exports.teacherBoard = (req, res) => {
 };
 
 exports.editProfile = (req, res) => {
-  const { id, name, contactNumber} = req.body;
+  const { id, 
+    name, 
+    contactNumber, 
+    address, 
+    modeTeaching,
+    subjectPreferences,
+    hourly,
+} = req.body;
 
   User.update(
     {
-      name, contactNumber
+      name,
+      contactNumber,
+      address, 
+      modeTeaching,
+      subjectPreferences,
+      hourly,
     },
     {
     where: {
