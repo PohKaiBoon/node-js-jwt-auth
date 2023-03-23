@@ -30,18 +30,18 @@ app.get("/", (req, res) => {
   res.json({ message: "Welcome to bezkoder application." });
 });
 
-app.get("/api/users", (req, res) => {
-  User.findAll().then((users) => {
-    res.json(users);
-  });
-});
+// app.get("/api/users", (req, res) => {
+//   User.findAll().then((users) => {
+//     res.json(users);
+//   });
+// });
 
 // routes
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3306;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
